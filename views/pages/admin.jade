@@ -3,7 +3,7 @@ extends ../layout
 block content
 	.container
 		.row
-			form.form-horizontal(method="post",action="/admin/movie/new")
+			form.form-horizontal(method="POST",action="/admin/movie/new")
 				input(type='hidden',name="movie[_id]",value = '#{movie._id}')
 				.form-group
 					label.col-sm-1.control-label(for="inputTitle") 电影名字
@@ -37,7 +37,6 @@ block content
 					label.col-sm-1.control-label(for="inputTitle") 电影简介
 					.col-sm-10
 						textarea#inputSummary.form-control(type="text",name="movie[summary]") #{movie.summary}
-				
 				.form-group
 					.col-sm-offset-2.col-sm-10
 					button.btn.btn-default(type="submit") 录入

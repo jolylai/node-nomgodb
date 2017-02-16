@@ -4,7 +4,7 @@ var port = process.env.PORT || 3000
 var app = express()
 var mongoose = require('mongoose')
 var Movie = require('./models/movie')
-// var User = require('./models/user')
+var User = require('./models/user')
 var _ = require('underscore')
 var bodyParser = require('body-parser')
 // var serveStatic = require('serve-static')
@@ -63,11 +63,28 @@ app.get('/admin/update/:id',function (req,res) {
 })
 
 // singup
-// app.post('/user/signup',function () {
-// 	var _user = req.body.user
-// 	console.log(_user)
-// })
+app.post('/user/signup',function (req,res) {
+	var _user = req.body.user
+	var user = new User(_user)
+	user.save(function (err,user) {
+		if (err) {
+			console.log(err)
+		}
+		console.log(user)
+	})
+})
 
+app.get('/admin/userlist',function (req,res) {
+	User.fetch(function (err,users) {
+		if (err) {
+			console.log(err)
+		}
+		res.render('userlist',{
+			title: '用户列表页',
+			users: users
+		})
+	})
+})
 // admin post movie 提交页面
 app.post('/admin/movie/new',function (req,res) {
 	var id = req.body.movie._id 

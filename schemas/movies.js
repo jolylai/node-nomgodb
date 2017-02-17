@@ -23,10 +23,10 @@ var MovieSchema = new mongoose.Schema({
 MovieSchema.pre('save',function (next) {
 	if (this.isNew) {
 		// 如果数据是新建的
-		this.meta.createAt = this.mata.updateAt = Date.now()
+		this.meta.createAt = this.meta.updateAt = Date.now()
 	}
 	else{
-		this.mata.updateAt = Date.now()
+		this.meta.updateAt = Date.now()
 	}
 	next()
 })

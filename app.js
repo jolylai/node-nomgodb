@@ -4,7 +4,7 @@ var port = process.env.PORT || 3000
 var app = express()
 var mongoose = require('mongoose')
 var Movie = require('./models/movie')
-var User = require('./models/user')
+var User = require('./models/users')
 var _ = require('underscore')
 var bodyParser = require('body-parser')
 // var serveStatic = require('serve-static')
@@ -13,12 +13,13 @@ mongoose.connect('mongodb://localhost:27017/imooc')
 mongoose.Promise = global.Promise
 // app.use(bodyParser.urlencoded())
 // app.use(serveStatic('bower_components')
+// 格式化时间
 app.locals.moment =require('moment')
 app.set('views','./views/pages')
 app.set('view engine','jade')
 // 提交表单 数据格式化
 app.use(bodyParser.urlencoded({ extended: true }))
-// 静态资源目录
+// 静态资源目录  /表示public目录下
 app.use(express.static(path.join(__dirname,'public')))
 app.listen(port)
 
@@ -51,12 +52,12 @@ app.get('/movie/:id',function (req,res) {
 })
 // admin update movie
 app.get('/admin/update/:id',function (req,res) {
-	var id =req.params.id
+	var id = req.params.id
 	if (id) {
 		Movie.findById(id,function (err,movie) {
 			res.render('admin',{
 				title: '电影后台更新页',
-				movie:movie
+				movie: movie
 			})
 		})
 	}
@@ -66,11 +67,17 @@ app.get('/admin/update/:id',function (req,res) {
 app.post('/user/signup',function (req,res) {
 	var _user = req.body.user
 	var user = new User(_user)
+	User.find({name:_user.name,function (err,user) {
+		if (err) {
+			console.log(err)
+		}
+	}})
 	user.save(function (err,user) {
 		if (err) {
 			console.log(err)
 		}
 		console.log(user)
+		res.redirect('/admin/userlist')
 	})
 })
 
@@ -88,20 +95,21 @@ app.get('/admin/userlist',function (req,res) {
 // admin post movie 提交页面
 app.post('/admin/movie/new',function (req,res) {
 	var id = req.body.movie._id 
-	var movieObj =req.body.movie
+	var movieObj = req.body.movie
 	console.log(movieObj)
 	var _movie
-	if (id  !== 'undefind') {
+	if (id !== 'undefined') {
 		Movie.findById(id,function (err,movie) {
 			if (err) {
 				console.log(err)
 			}
+			// underscore用新对象替换旧对象
 			_movie = _.extend(movie,movieObj)
 			_movie.save(function (err,movie) {
 				if (err) {
 					console.log(err)
 				}
-				res.redirect('/movie/'+movie._id)
+				res.redirect('/movie/'+ movie._id)
 			})
 		})
 	}

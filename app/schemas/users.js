@@ -60,7 +60,7 @@ UserSchema.methods = {
     })
   }
 }
-
+// 模型里面就可以调用
 UserSchema.statics = {
   fetch: function(cb) {
     return this

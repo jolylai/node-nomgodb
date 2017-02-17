@@ -7,9 +7,12 @@ var Movie = require('./models/movie')
 var User = require('./models/user')
 var _ = require('underscore')
 var bodyParser = require('body-parser')
+// 回话持久化
+// var mongostore = require('connect-mongo')(express)
 // var serveStatic = require('serve-static')
 // var bodyParser = require('body-parser')
-mongoose.connect('mongodb://localhost:27017/imooc')
+var dburl = 'mongodb://localhost:27017/imooc'
+mongoose.connect(dburl)
 mongoose.Promise = global.Promise
 // app.use(bodyParser.urlencoded())
 // app.use(serveStatic('bower_components')
@@ -20,6 +23,14 @@ app.set('view engine','jade')
 app.use(bodyParser.urlencoded({ extended: true }))
 // 静态资源目录
 app.use(express.static(path.join(__dirname,'public')))
+// app.use(express.cookieParser())
+// app.use(express.session({
+// 	sexret: 'imooc',
+// 	store: new mongostore({
+// 		url: dburl,
+// 		collection: 'session'
+// 	})
+// }))
 app.listen(port)
 
 console.log('started on port' + port)
@@ -27,6 +38,9 @@ console.log('started on port' + port)
 // 配置路由
 // inde page
 app.get('/',function (req,res) {
+	 // console.log('user in session')
+	 // console.log(req.session.user)
+	 console.log(req.baseUrl)
 	Movie.fetch(function (err,movies) {
 		if (err) {
 			console.log(err)
@@ -61,7 +75,30 @@ app.get('/admin/update/:id',function (req,res) {
 		})
 	}
 })
-
+// signin 
+app.post('/user/signin',function (req,res) {
+	var _user = req.body.user
+	var name = _user.name
+	var password = _user.password
+	User.findOne({name: naem,function (err,user) {
+		if (err){
+			console.log(err)
+		}
+		if (!user) {
+			return res.redirect('/')
+		}
+		user.compaerPassword(password,function (err,isMatch) {
+			if (err) {
+				console.log(err)
+			}
+			if (isMatch) {
+				return res.redirect('/')
+			}else{
+				console.log('wrong password')
+			}
+		})
+	}})
+})
 // singup
 app.post('/user/signup',function (req,res) {
 	var _user = req.body.user
@@ -74,6 +111,11 @@ app.post('/user/signup',function (req,res) {
 	})
 })
 
+// logout
+app.get('/logout',function (req,res) {
+	delete req.session.user
+	res.redirect('/')
+})
 app.get('/admin/userlist',function (req,res) {
 	User.fetch(function (err,users) {
 		if (err) {

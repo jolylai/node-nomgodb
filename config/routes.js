@@ -1,46 +1,11 @@
-var express = require('express')
-var path = require('path')
-var port = process.env.PORT || 3000
-var app = express()
-var mongoose = require('mongoose')
-
-var bodyParser = require('body-parser')
-// 回话持久化
-// var mongostore = require('connect-mongo')(express)
-// var serveStatic = require('serve-static')
-// var bodyParser = require('body-parser')
-var dburl = 'mongodb://localhost:27017/imooc'
-mongoose.connect(dburl)
-mongoose.Promise = global.Promise
-// app.use(bodyParser.urlencoded())
-// app.use(serveStatic('bower_components')
-// 格式化时间
-app.locals.moment =require('moment')
-app.set('views','./views/pages')
-app.set('view engine','jade')
-// 提交表单 数据格式化
-app.use(bodyParser.urlencoded({ extended: true }))
-// 静态资源目录  /表示public目录下
-app.use(express.static(path.join(__dirname,'public')))
-// app.use(express.cookieParser())
-// app.use(express.session({
-// 	sexret: 'imooc',
-// 	store: new mongostore({
-// 		url: dburl,
-// 		collection: 'session'
-// 	})
-// }))
-app.listen(port)
-require('./config/routes')(app)
-console.log('started on port' + port)
-
-<<<<<<< HEAD
+var Movie = require('../models/movie')
+var User = require('../models/users')
+var _ = require('underscore')
 // 配置路由
 // inde page
+module.exports = function (app) {
+
 app.get('/',function (req,res) {
-	 // console.log('user in session')
-	 // console.log(req.session.user)
-	 console.log(req.baseUrl)
 	Movie.fetch(function (err,movies) {
 		if (err) {
 			console.log(err)
@@ -65,57 +30,35 @@ app.get('/movie/:id',function (req,res) {
 })
 // admin update movie
 app.get('/admin/update/:id',function (req,res) {
-	var id =req.params.id
+	var id = req.params.id
 	if (id) {
 		Movie.findById(id,function (err,movie) {
 			res.render('admin',{
 				title: '电影后台更新页',
-				movie:movie
+				movie: movie
 			})
 		})
 	}
 })
-// signin 
-app.post('/user/signin',function (req,res) {
-	var _user = req.body.user
-	var name = _user.name
-	var password = _user.password
-	User.findOne({name: naem,function (err,user) {
-		if (err){
-			console.log(err)
-		}
-		if (!user) {
-			return res.redirect('/')
-		}
-		user.compaerPassword(password,function (err,isMatch) {
-			if (err) {
-				console.log(err)
-			}
-			if (isMatch) {
-				return res.redirect('/')
-			}else{
-				console.log('wrong password')
-			}
-		})
-	}})
-})
+
 // singup
 app.post('/user/signup',function (req,res) {
 	var _user = req.body.user
 	var user = new User(_user)
+	User.find({name:_user.name,function (err,user) {
+		if (err) {
+			console.log(err)
+		}
+	}})
 	user.save(function (err,user) {
 		if (err) {
 			console.log(err)
 		}
 		console.log(user)
+		res.redirect('/admin/userlist')
 	})
 })
 
-// logout
-app.get('/logout',function (req,res) {
-	delete req.session.user
-	res.redirect('/')
-})
 app.get('/admin/userlist',function (req,res) {
 	User.fetch(function (err,users) {
 		if (err) {
@@ -130,20 +73,21 @@ app.get('/admin/userlist',function (req,res) {
 // admin post movie 提交页面
 app.post('/admin/movie/new',function (req,res) {
 	var id = req.body.movie._id 
-	var movieObj =req.body.movie
+	var movieObj = req.body.movie
 	console.log(movieObj)
 	var _movie
-	if (id  !== 'undefind') {
+	if (id !== 'undefined') {
 		Movie.findById(id,function (err,movie) {
 			if (err) {
 				console.log(err)
 			}
+			// underscore用新对象替换旧对象
 			_movie = _.extend(movie,movieObj)
 			_movie.save(function (err,movie) {
 				if (err) {
 					console.log(err)
 				}
-				res.redirect('/movie/'+movie._id)
+				res.redirect('/movie/'+ movie._id)
 			})
 		})
 	}
@@ -211,5 +155,4 @@ app.delete('/admin/list',function (req,res) {
 		})
 	}
 })
-=======
->>>>>>> 1f7916af0dae04ecb10a57c119b2eb6330557bfb
+}

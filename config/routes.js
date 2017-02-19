@@ -1,15 +1,19 @@
 var Index = require('../app/controllers/index')
 var Movie = require('../app/controllers/movie')
 var User = require('../app/controllers/user')
+var Comment = require('../app/controllers/comment')
 // 配置路由
 // Index
 module.exports = function (app) {
 
-app.use(function (res,res,next) {
+// pre handle user
+app.use(function(req, res, next) {
 	var _user = req.session.user
-	app.locals.user =_user
+
+	app.locals.user = _user
 	next()
 })
+
 app.get('/',Index.index)
 
 // Movie
@@ -24,7 +28,10 @@ app.delete('/admin/list',Movie.del)
 app.post('/user/signup',User.signup)
 app.post('/user/signin',User.signin)
 app.get('/user/logout',User.logout)
-app.get('/user/userlist',User.signinRequired,User.adminRequired,User.userlist)
+app.get('/user/list',User.signinRequired,User.adminRequired,User.userlist)
 app.get('/signin',User.showSignin)
 app.get('/signup',User.showSignup)
+
+// comment
+app.post('/user/comment',User.signinRequired,Comment.save)
 }

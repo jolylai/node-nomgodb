@@ -41,7 +41,9 @@ exports.signin = function (req,res) {
 				console.log(err)
 			}
 			if (isMatch) {
-				res.session.user = user
+				console.log(user)
+				req.session.user = user
+				console.log(req.session.user)
 				return res.redirect('/')
 			}else{
 				return res.redirect('/signin')
@@ -52,7 +54,8 @@ exports.signin = function (req,res) {
 }
 // logout
 exports.logout = function (req,res) {
-	// body...
+	delete req.session.user
+	res.redirect('/')
 }
 exports.showSignin = function (req,res) {
 	res.render('signin')

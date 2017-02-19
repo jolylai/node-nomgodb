@@ -1,14 +1,22 @@
 var Movie = require('../models/movie')
+var Comment = require('../models/comment')
 var _ = require('underscore')
 // detail page
 exports.detail = function (req,res) {
 	// 取得id号
 	var id = req.params.id
 	Movie.findById(id,function (err,movie) {
-		res.render('detail',{
-			title: movie.title + '详情页',
-			movie: movie
-		})
+		Comment
+			.find({movie: id})
+			.populate('from','name')
+			.exec(function (err,comments) {
+				res.render('detail',{
+					title: '详情页',
+					movie: movie,
+					comments: comments
+				})
+				
+			})
 	})
 }
 // admin post movie 提交页面

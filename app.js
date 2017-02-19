@@ -18,15 +18,29 @@ app.set('views','./app/views/pages')
 app.set('view engine','jade')
 
 
-var mongostore = require('connect-mongo')(express)
-var session = require('express-session')
+// var mongostore = require('connect-mongo')(express)
+// var session = require('express-session')
+// app.use(session({
+//   secret: 'imooc',
+//   store: new mongoStore({
+//     url: dbUrl,
+//     collection: 'sessions'
+//   })
+// }))
+
+
+
+// 保持用户回话
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+
 app.use(session({
-  secret: 'imooc',
-  store: new mongoStore({
-    url: dbUrl,
-    collection: 'sessions'
-  })
-}))
+    secret: 'foo',
+    store: new MongoStore({
+		url: dburl,
+		collection: 'session'
+	})
+}));
 
 // 提交表单 数据格式化
 app.use(bodyParser.urlencoded({ extended: true }))

@@ -1,5 +1,6 @@
 var Movie = require('../models/movie')
 var Comment = require('../models/comment')
+var Catetory = require('../models/catetory')
 var _ = require('underscore')
 // detail page
 exports.detail = function (req,res) {
@@ -9,7 +10,10 @@ exports.detail = function (req,res) {
 		Comment
 			.find({movie: id})
 			.populate('from','name')
+			.populate('replay.from replay.to','name')
 			.exec(function (err,comments) {
+				console.log('comments: ')
+				console.log(comments)
 				res.render('detail',{
 					title: '详情页',
 					movie: movie,
@@ -63,18 +67,24 @@ exports.save = function (req,res) {
 
 // admin page
 exports.new = function (req,res) {
-	res.render('admin',{
-		title: '后台录入页',
-		movie: {
-			title:'',
-			doctor:'',
-			country: '',
-			year:'',
-			poster:'',
-			flash:'',
-			summary:'',
-			language:''
+	Catetory.find({},function (err,catetories) {
+		if (err) {
+			console.log(err)
 		}
+		res.render('admin',{
+			title: '后台录入页',
+			catetories: catetories,
+			movie: {
+				title:'',
+				doctor:'',
+				country: '',
+				year:'',
+				poster:'',
+				flash:'',
+				summary:'',
+				language:''
+			}
+		})
 	})
 }
 // list page

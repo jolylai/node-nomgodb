@@ -1,6 +1,7 @@
 var Index = require('../app/controllers/index')
 var Movie = require('../app/controllers/movie')
 var User = require('../app/controllers/user')
+var Catetory = require('../app/controllers/catetory')
 var Comment = require('../app/controllers/comment')
 // 配置路由
 // Index
@@ -19,7 +20,7 @@ app.get('/',Index.index)
 // Movie
 app.get('/movie/:id',Movie.detail)
 app.get('/admin/update/:id',Movie.update)
-app.post('/admin/movie/new',Movie.new)
+app.get('/admin/movie/new',Movie.new)
 app.post('/admin/movie',Movie.save)
 app.get('/admin/list', Movie.list)
 app.delete('/admin/list',Movie.del)
@@ -34,4 +35,9 @@ app.get('/signup',User.showSignup)
 
 // comment
 app.post('/user/comment',User.signinRequired,Comment.save)
+
+// catetory
+app.get('/admin/catetory/new',User.signinRequired,Catetory.new)
+app.post('/admin/catetory',User.signinRequired,Catetory.save)
+app.get('/admin/catetory/list',User.signinRequired,Catetory.list)
 }

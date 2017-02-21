@@ -55,6 +55,7 @@ exports.save = function (req,res) {
 			flash: movieObj.flash,
 			summary: movieObj.summary
 		})
+		var catetoryId = _movie.catetory
 		_movie.save(function (err,movie) {
 			if (err) {
 				console.log(err)

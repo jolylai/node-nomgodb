@@ -40,4 +40,8 @@ app.post('/user/comment',User.signinRequired,Comment.save)
 app.get('/admin/catetory/new',User.signinRequired,Catetory.new)
 app.post('/admin/catetory',User.signinRequired,Catetory.save)
 app.get('/admin/catetory/list',User.signinRequired,Catetory.list)
+
+// result
+app.get('/result',Index.search)
+
 }
